@@ -1,0 +1,14 @@
+a{
+    text-decoration:none;
+    color:black;
+}
+
+.target{
+    width:50%;
+    height:200px;
+    border:solid black 1px; 
+}
+
+#m1, #m2, #m3, #m4, #m5, #m6, #m7, #m8, #m9{
+    display:none;
+}

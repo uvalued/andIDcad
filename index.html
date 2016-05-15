@@ -1,83 +1,149 @@
-<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="format-detection" content="telephone=no" />
-		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-		<link rel="stylesheet" type="text/css" href="css/index.css" />
-		<title>Rock Paper Scissors Game</title>
-		<style type="text/css">
-			p, form {font-size:25px;}
-			button  {font-size:45px; width:200px; margin:25px 50px;}
-		</style>
-	</head>
-	<body>
-	<h1>Rock Paper Scissors Game</h1>
-	<br />
-	<p><i>What do you choose?</i></p>
-	<button type="button" onclick="PlayGame('R')">Rock</button></br>
-	<button type="button" onclick="PlayGame('P')">Paper</button></br>
-	<button type="button" onclick="PlayGame('S')">Scissors</button></br>
-	<span id="result">&nbsp;</span><br />
-	<span id="tally">&nbsp;</span><br />
-	<span id="log">&nbsp;</span><br />
-				
-	<script type="text/javascript">
-		var CHOICE = { // set up enumerations
-			ROCK     : {value: 1, name: "Rock", code: "R"}, 
-			PAPER    : {value: 2, name: "Paper", code: "P"}, 
-			SCISSORS : {value: 3, name: "Scissors", code: "S"}
-		};
-		var humanWins = 0;
-		var compWins = 0;
+<head>
 
-		function PlayGame(play) {
-			var humanChoice;
-			var compChoice;
+<script src="../signature/jquery-1.10.2.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="solvedabc.css" />
+
+</head>
+<body>
+
+<div id="wrapper">
+
+  		<div id="header">WELCOME TO ID CARD UNIT</div>
+  
+<div id="content">
+    							<div id="content-left">
+                                    <p><a href="#">Home</a></p>
+									<p><a href="/health/main3.html">ID Card Process</a></p>
+                                    <p><a href="#">Preview</a></p>
+									<p><a href="/health/backup.php">Under construction</a></p>
+
+
+                                    
+                                
+
+                                </div>
+        
+<div id="content-main">
+
+<form name="multiform" id="multiform" action="submit.php" method="POST" enctype="multipart/form-data">
+<div>
+ 
+      <label for="imgs">Take or select photo(s)</label><br />
+
+<input type="file" name="imgs[]" id="imgs" multiple style="width:250px; height:50px;"/>
+<input  type="submit" name="submit" id="multi-post" value="Run Code" style="width:200px; height:50px;"></input>
+</div>
+   
+
+
+<br /> <br />
+
+</form>	
+
+</div>
+<div id="multi-msg"></div>
+
+<script>
+$(document).ready(function()
+{
+
+
+ function getDoc(frame) {
+     var doc = null;
+     
+     // IE8 cascading access check
+     try {
+         if (frame.contentWindow) {
+             doc = frame.contentWindow.document;
+         }
+     } catch(err) {
+     }
+
+     if (doc) { // successful getting content
+         return doc;
+     }
+
+     try { // simply checking may throw in ie8 under ssl or mismatched protocol
+         doc = frame.contentDocument ? frame.contentDocument : frame.document;
+     } catch(err) {
+         // last attempt
+         doc = frame.document;
+     }
+     return doc;
+ }
+
+$("#multiform").submit(function(e)
+{
+		$("#multi-msg").html("<img src='loading.gif'/>");
+
+	var formObj = $(this);
+	var formURL = formObj.attr("action");
+
+if(window.FormData !== undefined)  // for HTML5 browsers
+//	if(false)
+	{
 	
-			if (play==='R') {
-				humanChoice = CHOICE.ROCK;
-			} else if (play==='P') {
-				humanChoice = CHOICE.PAPER;
-			} else if (play==='S') {
-				humanChoice = CHOICE.SCISSORS;
-			}
+		var formData = new FormData(this);
+		$.ajax({
+        	url: formURL,
+	        type: 'POST',
+			data:  formData,
+			mimeType:"multipart/form-data",
+			contentType: false,
+    	    cache: false,
+        	processData:false,
+			success: function(data, textStatus, jqXHR)
+		    {
+					$("#multi-msg").html('<pre><code>'+data+'</code></pre>');
+		    },
+		  	error: function(jqXHR, textStatus, errorThrown) 
+	    	{
+				$("#multi-msg").html('<pre><code class="prettyprint">AJAX Request Failed<br/> textStatus='+textStatus+', errorThrown='+errorThrown+'</code></pre>');
+	    	} 	        
+	   });
+        e.preventDefault();
+        e.unbind();
+   }
+   else  //for olden browsers
+	{
+		//generate a random id
+		var  iframeId = 'unique' + (new Date().getTime());
+
+		//create an empty iframe
+		var iframe = $('<iframe src="javascript:false;" name="'+iframeId+'" />');
+
+		//hide it
+		iframe.hide();
+
+		//set form target to iframe
+		formObj.attr('target',iframeId);
+
+		//Add iframe to body
+		iframe.appendTo('body');
+		iframe.load(function(e)
+		{
+			var doc = getDoc(iframe[0]);
+			var docRoot = doc.body ? doc.body : doc.documentElement;
+			var data = docRoot.innerHTML;
+			$("#multi-msg").html('<pre><code>'+data+'</code></pre>');
+		});
 	
-			var computer = (Math.floor( Math.random() * 3 + 0.5 ));
-				if ( computer === 1 ) {
-					compChoice = CHOICE.ROCK }
-				else { if ( computer === 2 ) {
-					compChoice = CHOICE.PAPER }
-				else { 
-					compChoice = CHOICE.SCISSORS }
-				}
-			document.getElementById('result').innerHTML="<p>You chose '" + humanChoice.name + "' and I chose '" + compChoice.name + "'</p>";
-			//document.getElementById('log').innerHTML+="H:" + humanChoice.code + " C:" + compChoice.code + "-";
+	}
+
+});
+
+
+$("#multi-post").click(function()
+	{
+		
+	$("#multiform").submit();
 	
-			var win = humanChoice.value - compChoice.value;
-			if ( win === 0 ) { 
-				document.getElementById('result').innerHTML += "<p><b>So we draw</b></p>" } 
-			else {
-				if ( win === -2 || win === 1 ) { 
-					document.getElementById('result').innerHTML += "<p><b>So you win</b></p>"; humanWins++; }
-				else {
-					if ( win === -1 || win === 2 ) { 
-						document.getElementById('result').innerHTML += "<p><b>So I win</b></p>"; compWins++; }
-					else {}
-				}
-			}
-			document.getElementById('tally').innerHTML = "<p><i>Leaderboard:</i><br />Your wins: " + humanWins + "&nbsp;&nbsp;&nbsp;My wins: " + compWins + "</p>";
-			if ( compWins < humanWins ) { 
-				document.getElementById('tally').innerHTML += "<p>You're in the lead</p>"; } 
-			else if ( compWins > humanWins ) {
-				document.getElementById('tally').innerHTML += "<p>I'm in the lead</p>"; } 
-			else if ( compWins == humanWins ) {
-				document.getElementById('tally').innerHTML += "<p>We're running head to head</p>"; } 		
-		}
-		</script>
-		<script type="text/javascript" src="js/index.js"></script>
-		<script type="text/javascript">
-			app.initialize();
-		</script>
-	</body>
+});
+
+});
+</script>
+
+</body>
 </html>
